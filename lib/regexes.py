@@ -13,7 +13,7 @@ regexes = {
     'pgp_private': re.compile(r'BEGIN PGP PRIVATE', re.I),
     'ssh_private': re.compile(r'BEGIN RSA PRIVATE', re.I),
     'db_keywords': [
-		re.compile(r'((customers?|email|users?|members?|acc(?:oun)?ts?)([-_|/\s]?(address|name|id[^")a-zA-Z0-9_]|[-_:|/\\])))', re.I),
+        re.compile(r'((customers?|email|users?|members?|acc(?:oun)?ts?)([-_|/\s]?(address|name|id[^")a-zA-Z0-9_]|[-_:|/\\])))', re.I),
         re.compile(r'((\W?pass(wor)?d|hash)[\s|:])', re.I),
         re.compile(r'((\btarget|\bsite)\s*?:?\s*?(([a-z][\w-]+:/{1,3})?([-\w\s_/]+\.)*[\w=/?%]+))', re.I),  # very basic URL check - may be improved later
         re.compile(r'(my\s?sql[^i_\.]|sql\s*server)', re.I),
@@ -21,11 +21,12 @@ regexes = {
         re.compile(r'(data[-_\s]*base|\Wdb)', re.I),  # added the non-word char before db.. we'll see if that helps
         re.compile(r'(table\s*?:)', re.I),
         re.compile(r'((available|current)\s*(databases?|dbs?)\W)', re.I),
-        re.compile(r'(hacked\s*by)', re.I)
+        re.compile(r'(hacked\s*by)', re.I),
+        re.compile(r'([A-Z]+\=)', re.I) # .env files, eg:  PASSWORD=...
     ],
 	# I was hoping to not have to make a blacklist, but it looks like I don't really have a choice
     'blacklist': [ 
-		re.compile(r'(select\s+.*?from|join|declare\s+.*?\s+as\s+|update.*?set|insert.*?into)', re.I),  # SQL
+        re.compile(r'(select\s+.*?from|join|declare\s+.*?\s+as\s+|update.*?set|insert.*?into)', re.I),  # SQL
         re.compile(r'(define\(.*?\)|require_once\(.*?\))', re.I),  # PHP
         re.compile(r'(function.*?\(.*?\))', re.I),
         re.compile(r'(Configuration(\.Factory|\s*file))', re.I),

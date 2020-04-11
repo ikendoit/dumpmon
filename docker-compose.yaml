@@ -1,0 +1,22 @@
+version: '3'
+
+services:
+  runner_monitor:
+    build: .
+    volumes:
+      - .:/code
+    command: python -u dumpmon.py
+    network_mode: 'bridge'
+    depends_on:
+      - db
+    links:
+      - db
+  db:
+    image: 'mongo:latest'
+    network_mode: 'bridge'
+    volumes:
+      - ./data:/data/db
+    command: mongod --port 27017
+    #environment: 
+    #  MONGO_INITDB_ROOT_USERNAME: root
+    #  MONGO_INITDB_ROOT_PASSWORD: localpwd
