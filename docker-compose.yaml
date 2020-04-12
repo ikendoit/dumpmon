@@ -1,6 +1,27 @@
-version: '3'
+version: '3.2'
 
 services:
+
+  # Please don'r run on the cloud (if you do, leave me out of it)
+  mysql_db:
+    image: mysql:latest
+    network_mode: 'bridge'
+    volumes:
+      - ./database/mysql/setup.sql:/docker-entrypoint-initdb.d/setup.sql
+      - ./database/mysql/data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_ROOT_PASSWORD: 123456
+      MYSQL_DATABASE: pastes_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: 123456
+    healthcheck:
+      test: mysql -u $$MYSQL_USER --password=$$MYSQL_PASSWORD $$MYSQL_DATABASE --execute "show database;"
+      interval: 2s
+      timeout: 20s
+      retries: 10
+
+  # pull data and put them to db
   runner_monitor:
     build: .
     volumes:
@@ -8,15 +29,24 @@ services:
     command: python -u dumpmon.py
     network_mode: 'bridge'
     depends_on:
-      - db
+      - mysql_db
     links:
-      - db
-  db:
-    image: 'mongo:latest'
+      - mysql_db
+
+  # Web UI Visualization, read data from db
+  grafana:
+    image: grafana/grafana:master-ubuntu
+    container_name: monitoring_grafana
+    restart: unless-stopped
     network_mode: 'bridge'
+    environment:
+      - GF_AUTH_GENERIC_OAUTH_TLS_SKIP_VERIFY_INSECURE="true"
+    depends_on:
+      - mysql_db
+    links:
+      - mysql_db
     volumes:
-      - ./data:/data/db
-    # doing umask since mongoDB writing to this volume will make the file become 600, which throws error when trying to re-run the containers
-    command: \
-      umask a=r+w+x; \ 
-      mongod --port 27017
+      - ./web-ui/grafana:/var/lib/grafana
+    ports:
+      - 3003:3000
+

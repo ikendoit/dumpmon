@@ -11,5 +11,4 @@ output.log
 *.swp
 *.out
 
-# Mongo db volume
-data
+database/mysql/data/*

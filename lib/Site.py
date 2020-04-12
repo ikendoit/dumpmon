@@ -2,9 +2,9 @@ from Queue import Queue
 import requests
 import time
 import re
-from pymongo import MongoClient
 from requests import ConnectionError
-from settings import USE_DB, DB_HOST, DB_PORT
+from settings import DB_HOST, DB_PORT, DB_DB, DB_PWD, DB_USER
+import mysql.connector
 import logging
 import helper
 
@@ -32,11 +32,14 @@ class Site(object):
     def __init__(self, queue=None):
         if queue is None:
             self.queue = []
-        if USE_DB:
-            # Lazily create the db and collection if not present
-            print("CONNECTING", DB_HOST, DB_PORT)
-            self.db_client = MongoClient(DB_HOST, DB_PORT).paste_db.pastes
-            # Create 
+
+        print("CONNECTING", DB_HOST, DB_PORT)
+        self.mysql_client = mysql.connector.connect(
+          host=DB_HOST,
+          user=DB_USER,
+          password=DB_PWD,
+          database=DB_DB
+        )
 
 
     def empty(self):
@@ -81,18 +84,17 @@ class Site(object):
                 tweet = helper.build_tweet(paste)
                 print("trying to insert: ", paste.id)
                 with t_lock:
-                    print("INSERTING INTO MONGO", paste.id)
-                    self.db_client.save({
-                        'pid' : paste.id,
-                        'text' : paste.text,
-                        'emails' : paste.emails,
-                        'hashes' : paste.hashes,
-                        'num_emails' : paste.num_emails,
-                        'num_hashes' : paste.num_hashes,
-                        'type' : paste.type,
-                        'db_keywords' : paste.db_keywords,
-                        'url' : paste.url
-                       })
+                    print("INSERTING INTO db", paste.id)
+                    db_cursor = self.mysql_client.cursor()
+                    query_add_record = ("INSERT INTO pastes VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);")
+                    query_data = ( ""+paste.id, ""+paste.text, ""+paste.emails, ""+paste.hashes, ""+paste.num_emails, ""+paste.num_hashes, ""+paste.type, ""+paste.db_keywords, ""+paste.url)
+
+                    db_cursor.execute(query_add_record, query_data)
+
+                    client.commit()
+                    cursor.close()
+
+            time.sleep(30) # sleep 30 seconds before every message monitor
             self.update()
             while self.empty():
                 logging.debug('[*] No results... sleeping')

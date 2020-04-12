@@ -1,15 +1,11 @@
 # settings.py
 import os
 
-USE_DB = True
-DB_HOST = os.environ.get('DB_1_PORT_27017_TCP_ADDR') # service name "db" is defined in docker-compose file
-DB_PORT = 27017
-
-# Twitter Settings
-CONSUMER_KEY = 'your_consumer_key'
-CONSUMER_SECRET = 'your_consumer_secret'
-ACCESS_TOKEN = 'your_access_token'
-ACCESS_TOKEN_SECRET = 'your_access_token_secret'
+DB_HOST = "mysql_db"
+DB_PORT = 3306
+DB_PWD = '123456'
+DB_DB = 'pastes_db'
+DB_USER = 'user'
 
 # Thresholds
 EMAIL_THRESHOLD = 20

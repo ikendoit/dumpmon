@@ -14,13 +14,17 @@ from lib.Slexy import Slexy, SlexyPaste
 from lib.Pastie import Pastie, PastiePaste
 from lib.helper import log
 from time import sleep
-from settings import CONSUMER_KEY, CONSUMER_SECRET, ACCESS_TOKEN, ACCESS_TOKEN_SECRET, log_file
+from settings import log_file
 import argparse
 import threading
 import logging
 
 
 def monitor():
+    #while (True):
+    #    print("running sleep permanently")
+    #    sleep(20)
+    #return 0;
     '''
     monitor() - Main function... creates and starts threads
 
