@@ -26,7 +26,8 @@ class Slexy(Site):
 
     def update(self):
         '''update(self) - Fill Queue with new Slexy IDs'''
-        logging.info('[*] Retrieving Slexy ID\'s')
+        logging.info('[*] Retrieving Slexy ID\'s: ')
+        sleep(2)
         results = BeautifulSoup(helper.download(self.BASE_URL + '/recent')).find_all(
             lambda tag: tag.name == 'td' and tag.a and '/view/' in tag.a['href'])
         new_pastes = []

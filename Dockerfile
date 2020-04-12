@@ -2,6 +2,7 @@ FROM python:2.7
 
 WORKDIR /code
 
+# Using volume for easier patching
 #COPY . .
 
 # Install Pip dependencies

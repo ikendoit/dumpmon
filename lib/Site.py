@@ -66,18 +66,22 @@ class Site(object):
         self.queue = []
 
     def list(self):
+        print("QUEUE: ", self.BASE_URL)
         print('\n'.join(url for url in self.queue))
 
     def monitor(self, t_lock):
         self.update()
         while(1):
+            self.list()
             while not self.empty():
                 paste = self.get()
                 self.ref_id = paste.id
                 logging.info('[*] Checking ' + paste.url)
                 paste.text = self.get_paste_text(paste)
                 tweet = helper.build_tweet(paste)
+                print("trying to insert: ", paste.id)
                 with t_lock:
+                    print("INSERTING INTO MONGO", paste.id)
                     self.db_client.save({
                         'pid' : paste.id,
                         'text' : paste.text,

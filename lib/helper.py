@@ -19,7 +19,10 @@ def download(url, headers=None):
     if headers:
         r.headers.update(headers)
     try:
+        print("downloading: ", url);
+        sleep(4)
         response = r.get(url).text
+        print("got response")
     except requests.ConnectionError:
         logging.warn('[!] Critical Error - Cannot connect to site')
         sleep(5)

@@ -1,5 +1,4 @@
 # project
-settings.py
 output.log
 
 # python specific
@@ -12,4 +11,5 @@ output.log
 *.swp
 *.out
 
+# Mongo db volume
 data

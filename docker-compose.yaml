@@ -16,7 +16,7 @@ services:
     network_mode: 'bridge'
     volumes:
       - ./data:/data/db
-    command: mongod --port 27017
-    #environment: 
-    #  MONGO_INITDB_ROOT_USERNAME: root
-    #  MONGO_INITDB_ROOT_PASSWORD: localpwd
+    # doing umask since mongoDB writing to this volume will make the file become 600, which throws error when trying to re-run the containers
+    command: \
+      umask a=r+w+x; \ 
+      mongod --port 27017

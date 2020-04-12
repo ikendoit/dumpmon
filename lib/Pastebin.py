@@ -33,11 +33,13 @@ class Pastebin(Site):
         raw = None
         while not raw:
             try:
+                sleep(3)
                 raw = self.session.get(self.BASE_URL + '/archive').text
             except:
                 logging.info('Error with pastebin')
                 raw = None
                 sleep(5)
+        print(raw)
         results = BeautifulSoup(raw).find_all(
             lambda tag: tag.name == 'td' and tag.a and '/archive/' not in tag.a['href'] and tag.a['href'][1:])
         if not self.ref_id:
