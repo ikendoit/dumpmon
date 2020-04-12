@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 from . import helper
 from time import sleep
 from settings import SLEEP_SLEXY
-import logging
 
 
 class SlexyPaste(Paste):
@@ -26,8 +25,11 @@ class Slexy(Site):
 
     def update(self):
         '''update(self) - Fill Queue with new Slexy IDs'''
-        logging.info('[*] Retrieving Slexy ID\'s: ')
         sleep(2)
+
+        return ; # DEBUG: disable this module
+
+        helper.log('[*] Retrieving Slexy ID\'s: ')
         results = BeautifulSoup(helper.download(self.BASE_URL + '/recent')).find_all(
             lambda tag: tag.name == 'td' and tag.a and '/view/' in tag.a['href'])
         new_pastes = []
@@ -40,7 +42,7 @@ class Slexy(Site):
                 break
             new_pastes.append(paste)
         for entry in new_pastes[::-1]:
-            logging.info('[+] Adding URL: ' + entry.url)
+            helper.log('[+] Adding URL: ' + entry.url)
             self.put(entry)
 
     def get_paste_text(self, paste):

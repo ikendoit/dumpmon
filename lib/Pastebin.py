@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 from . import helper
 from time import sleep
 from settings import SLEEP_PASTEBIN
-import logging
 import requests
 
 
@@ -28,18 +27,20 @@ class Pastebin(Site):
 
     def update(self):
         '''update(self) - Fill Queue with new Pastebin IDs'''
-        logging.info('Retrieving Pastebin ID\'s')
+        helper.log('Retrieving Pastebin ID\'s')
         new_pastes = []
+
+        return ; # DEBUG: disable this module
+
         raw = None
         while not raw:
             try:
                 sleep(3)
                 raw = self.session.get(self.BASE_URL + '/archive').text
-            except:
-                logging.info('Error with pastebin')
+            except Exception as e:
+                helper.log('Error with pastebin' + e)
                 raw = None
                 sleep(5)
-        print(raw)
         results = BeautifulSoup(raw).find_all(
             lambda tag: tag.name == 'td' and tag.a and '/archive/' not in tag.a['href'] and tag.a['href'][1:])
         if not self.ref_id:
@@ -51,7 +52,8 @@ class Pastebin(Site):
                 break
             new_pastes.append(paste)
         for entry in new_pastes[::-1]:
-            logging.info('Adding URL: ' + entry.url)
+            helper.log('Adding URL: ' + entry.url)
             self.put(entry)
+
     def get_paste_text(self, paste):
         return helper.download(paste.url)

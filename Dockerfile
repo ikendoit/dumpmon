@@ -6,4 +6,4 @@ WORKDIR /code
 #COPY . .
 
 # Install Pip dependencies
-RUN pip install beautifulsoup4 requests pymongo mysql-connector-python
+RUN pip install beautifulsoup4 requests pymongo mysql-connector-python tenacity

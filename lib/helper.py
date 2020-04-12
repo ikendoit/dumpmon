@@ -8,37 +8,38 @@ import requests
 import settings
 from time import sleep, strftime
 import logging
+from tenacity import *
 
 
 r = requests.Session()
 
 
+# tenacity api
+@retry(stop=stop_after_attempt(3), wait=wait_fixed(5) + wait_random(0, 2))
 def download(url, headers=None):
     if not headers:
         headers = None
     if headers:
         r.headers.update(headers)
-    try:
-        print("downloading: ", url);
-        sleep(4)
-        response = r.get(url).text
-        print("got response")
-    except requests.ConnectionError:
-        logging.warn('[!] Critical Error - Cannot connect to site')
-        sleep(5)
-        logging.warn('[!] Retrying...')
-        response = download(url)
+
+    log("downloading: " + url )
+    sleep(4)
+    response = r.get(url).text
+    log("got response from " + url)
+
     return response
 
 
-def log(text):
+def log(text, log_method='info'):
     '''
     log(text): Logs message to both STDOUT and to .output_log file
 
     '''
-    print(text)
+
+    # doing logging[log_method] throws "has no attribute __getitem__" exception
+    getattr(logging,log_method)(text)
     with open(settings.log_file, 'a') as logfile:
-        logfile.write(text + '\n')
+        logfile.write(str(text) + '\n')
 
 
 def build_tweet(paste):

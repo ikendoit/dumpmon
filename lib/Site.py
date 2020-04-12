@@ -5,7 +5,6 @@ import re
 from requests import ConnectionError
 from settings import DB_HOST, DB_PORT, DB_DB, DB_PWD, DB_USER
 import mysql.connector
-import logging
 import helper
 
 
@@ -69,8 +68,8 @@ class Site(object):
         self.queue = []
 
     def list(self):
-        print("QUEUE: ", self.BASE_URL)
-        print('\n'.join(url for url in self.queue))
+        helper.log("QUEUE: " + self.BASE_URL)
+        helper.log('\n'.join(obj.url for obj in self.queue))
 
     def monitor(self, t_lock):
         self.update()
@@ -79,24 +78,34 @@ class Site(object):
             while not self.empty():
                 paste = self.get()
                 self.ref_id = paste.id
-                logging.info('[*] Checking ' + paste.url)
+                helper.log('[*] Checking ' + paste.url)
                 paste.text = self.get_paste_text(paste)
-                tweet = helper.build_tweet(paste)
-                print("trying to insert: ", paste.id)
+                helper.log('[*] Finished Checking ' + paste.url)
                 with t_lock:
-                    print("INSERTING INTO db", paste.id)
+                    helper.log('[*] INSERTING ' + paste.id)
                     db_cursor = self.mysql_client.cursor()
-                    query_add_record = ("INSERT INTO pastes VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s);")
-                    query_data = ( ""+paste.id, ""+paste.text, ""+paste.emails, ""+paste.hashes, ""+paste.num_emails, ""+paste.num_hashes, ""+paste.type, ""+paste.db_keywords, ""+paste.url)
+                    query_add_record = ("INSERT INTO pastes(pid, text, emails, hashes, num_emails, num_hashes, type, db_keywords, url) VALUES(%s,  %s,  %s,  %s,  %s,  %s,  %s,  %s,  %s);")
+                    query_data = ( 
+                        paste.id.encode('ascii',errors='ignore'),
+                        paste.text.encode('ascii',errors='ignore'),
+                        str(paste.emails),
+                        str(paste.hashes),
+                        str(paste.num_emails),
+                        str(paste.num_hashes),
+                        str(paste.type),
+                        str(paste.db_keywords),
+                        str(paste.url) 
+                    )
 
                     db_cursor.execute(query_add_record, query_data)
 
-                    client.commit()
-                    cursor.close()
+                    self.mysql_client.commit()
+                    db_cursor.close()
+                    helper.log('[*] Finished INSERTING ' + paste.id)
 
             time.sleep(30) # sleep 30 seconds before every message monitor
             self.update()
             while self.empty():
-                logging.debug('[*] No results... sleeping')
+                helper.log('[*] No results... sleeping', 'debug')
                 time.sleep(self.sleep)
                 self.update()

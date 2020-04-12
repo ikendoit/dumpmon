@@ -4,8 +4,8 @@ from bs4 import BeautifulSoup
 from . import helper
 from time import sleep
 from settings import SLEEP_PASTIE
-import logging
 
+# PASTIE.ORG IS NO LONGER ACTIVE
 
 class PastiePaste(Paste):
     def __init__(self, id):
@@ -26,7 +26,9 @@ class Pastie(Site):
 
     def update(self):
         '''update(self) - Fill Queue with new Pastie IDs'''
-        logging.info('Retrieving Pastie ID\'s')
+        sleep(2) 
+
+        helper.log('Retrieving Pastie ID\'s')
         results = [tag for tag in BeautifulSoup(helper.download(
             self.BASE_URL + '/pastes')).find_all('p', 'link') if tag.a]
         new_pastes = []
@@ -40,7 +42,7 @@ class Pastie(Site):
                 break
             new_pastes.append(paste)
         for entry in new_pastes[::-1]:
-            logging.debug('Adding URL: ' + entry.url)
+            helper.log('Adding URL: ' + entry.url, 'debug')
             self.put(entry)
 
     def get_paste_text(self, paste):

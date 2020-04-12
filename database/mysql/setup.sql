@@ -1,7 +1,8 @@
 CREATE TABLE pastes (
 	id INT AUTO_INCREMENT PRIMARY KEY,
-	pid VARCHAR(6),
-	text TEXT,
+	updated_at TIMESTAMP NOT NULL DEFAULT NOW() ON UPDATE NOW(),
+	pid VARCHAR(100),
+	text LONGTEXT,
 	emails TEXT,
 	hashes TEXT,
 	num_emails VARCHAR(255),

@@ -1,6 +1,5 @@
 from .regexes import regexes
 import settings
-import logging
 import re
 
 class Paste(object):
@@ -40,12 +39,12 @@ class Paste(object):
             self.sites = list(set([re.search('@(.*)$', email).group(1).lower() for email in self.emails]))
         for regex in regexes['db_keywords']:
             if regex.search(self.text):
-                logging.debug('\t[+] ' + regex.search(self.text).group(1))
+                helper.log('\t[+] ' + regex.search(self.text).group(1), 'debug')
                 self.db_keywords += round(1/float(
                     len(regexes['db_keywords'])), 2)
         for regex in regexes['blacklist']:
             if regex.search(self.text):
-                logging.debug('\t[-] ' + regex.search(self.text).group(1))
+                helper.log('\t[-] ' + regex.search(self.text).group(1), 'debug')
                 self.db_keywords -= round(1.25 * (
                     1/float(len(regexes['db_keywords']))), 2)
         if (self.num_emails >= settings.EMAIL_THRESHOLD) or (self.num_hashes >= settings.HASH_THRESHOLD) or (self.db_keywords >= settings.DB_KEYWORDS_THRESHOLD):
