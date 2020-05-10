@@ -16,27 +16,31 @@ Modified, to do local monitoring, as well as patches + fixes where I see fit.
 
 ## Monitor Guide:
 ```
-	docker-compose build 	
-	docker-compose up	
+	./dumpmon.sh build
+	./dumpmon.sh up
 ```
 
 You can now view the data inside of ./data directory
 
 ## Visualization Guide:
 ```
-	Hopefully soon ? If we survive Corvid
+	check localhost:3003 for Grafana dashboard.
 ```
 
 ## FAQ, TIPS:
 
- - Q: What if I want to update the code ?
+ - Q: What if I want to update the code for the monitor ?
 
  	 A: Well someone is feeling energized.
  		
 		<update code>
-		docker-compose down
-		docker-compose build 
-		docker-compose up
+		./dumpmon.sh restart runner_monitor
+
+ - Q: The runner_monitor exitted before MySQL finished initiating
+
+   A: GD, not again!! 
+	 	
+		./dumpmon.sh restart runner_monitor
 
  - Q: I tried doing docker-compose build, but the ./data directory is having a 600 permission for all files
 

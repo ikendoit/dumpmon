@@ -25,9 +25,7 @@ class Slexy(Site):
 
     def update(self):
         '''update(self) - Fill Queue with new Slexy IDs'''
-        sleep(2)
-
-        return ; # DEBUG: disable this module
+        sleep(5)
 
         helper.log('[*] Retrieving Slexy ID\'s: ')
         results = BeautifulSoup(helper.download(self.BASE_URL + '/recent')).find_all(

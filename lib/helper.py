@@ -6,26 +6,28 @@ Author: Jordan
 
 import requests
 import settings
+import datetime
 from time import sleep, strftime
 import logging
 from tenacity import *
 
 
 r = requests.Session()
+originalHeaders = {
+    'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.163 Safari/537.36'
+}
 
 
 # tenacity api
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(5) + wait_random(0, 2))
-def download(url, headers=None):
-    if not headers:
-        headers = None
-    if headers:
-        r.headers.update(headers)
+def download(url, headers=originalHeaders):
+    r.headers.update(headers)
 
-    log("downloading: " + url )
     sleep(4)
+    log("downloading: " + url + " - " + str(datetime.datetime.now()))
     response = r.get(url).text
     log("got response from " + url)
+    print(response)
 
     return response
 
